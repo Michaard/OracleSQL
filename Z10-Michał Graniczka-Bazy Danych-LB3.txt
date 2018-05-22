@@ -1,0 +1,123 @@
+/*ZESTAW 10
+Micha³ Graniczka - LB3*/
+
+SET SERVEROUTPUT ON;
+--[zad1]
+  DECLARE
+    liczba NUMBER := 7;
+    znak VARCHAR2(10) := 'znak';
+    data DATE := TO_DATE('26/05/2016','dd/mm/yyyy');
+  BEGIN
+    DBMS_OUTPUT.PUT_LINE(liczba);
+    DBMS_OUTPUT.PUT_LINE(znak);
+    DBMS_OUTPUT.PUT_LINE(data);
+  END;
+
+--[zad2]
+  DECLARE 
+    data DATE := TO_DATE('07/07/1993','dd/mm/yyyy');
+    dni NUMBER;
+    tygodnie NUMBER;
+    miesiace NUMBER;
+  BEGIN
+    dni := TRUNC(SYSDATE-data);
+    tygodnie := TRUNC((SYSDATE-data)/7);
+    miesiace := TRUNC(MONTHS_BETWEEN(SYSDATE,data));
+    DBMS_OUTPUT.PUT_LINE('Liczba dni od '||data||': '||dni);
+    DBMS_OUTPUT.PUT_LINE('Liczba tygodni od '||data||': '||tygodnie);
+    DBMS_OUTPUT.PUT_LINE('Liczba miesiecy od '||data||': '||miesiace);
+  END;
+
+--[zad3]
+  DECLARE
+    id_1 NUMBER;
+    id_2 NUMBER;
+    first_name_1 VARCHAR(30);
+    first_name_2 VARCHAR(30);
+    last_name_1 VARCHAR(30);
+    last_name_2 VARCHAR(30);
+  BEGIN
+    SELECT id, last_name, first_name
+    INTO id_1, last_name_1, first_name_1
+    FROM Emp
+    WHERE salary = (SELECT MIN(salary) FROM Emp);
+    DBMS_OUTPUT.PUT_LINE('DANE NAJMNIEJ ZARABIAJACEGO PRACOWNIKA');
+    DBMS_OUTPUT.PUT_LINE('ID: '||id_1||'; Nazwisko: '||last_name_1||'; Imie: '||first_name_1);
+
+    SELECT id,last_name,first_name
+    INTO id_2,last_name_2,first_name_2
+    FROM Emp
+    WHERE salary=(SELECT MAX(salary) FROM emp);
+    DBMS_OUTPUT.put_line ('DANE NAJLEPIEJ ZARABIAJACEGO PRACOWNIKA');
+    DBMS_OUTPUT.PUT_LINE('ID: '||ID_2||'; Nazwisko: '||last_name_2||'; Imie: '||first_name_2);
+    EXCEPTION
+      WHEN TOO_MANY_ROWS THEN
+        DBMS_OUTPUT.PUT_LINE('Zapytanie zwrocilo wiecej niz 1 rekord.');
+  END;
+
+--[zad4]
+--a)
+  DECLARE
+    numer NUMBER;
+    nazwisko VARCHAR(30);
+    imie VARCHAR(30);
+    
+    CURSOR k_jawny IS
+    SELECT id,last_name,first_name
+    FROM Emp;
+    
+  BEGIN
+    OPEN k_jawny;
+    LOOP
+      FETCH k_jawny
+      INTO numer,nazwisko,imie;
+      EXIT WHEN k_jawny%NOTFOUND;
+      DBMS_OUTPUT.PUT_LINE(k_jawny%ROWCOUNT||'. ID: '||numer||' - '||nazwisko||' '||imie);
+    END LOOP;
+    CLOSE k_jawny;
+  END;
+
+--b)
+  BEGIN
+    FOR i IN (SELECT id,last_name,first_name FROM Emp) LOOP
+      DBMS_OUTPUT.PUT_LINE('ID: '||i.id||' - '||i.last_name||' '||i.first_name);
+    END LOOP;
+  END;
+  
+--[zad5]
+  DECLARE
+    CURSOR k_par(date_ord_from DATE, date_ord_to DATE) IS
+      SELECT O.id, C.name, O.date_ordered, E.last_name, E.first_name 
+      FROM Ord O, Customer C, Emp E 
+      WHERE O.customer_id=C.id AND O.sales_rep_id=E.id AND O.date_ordered >= date_ord_from AND O.date_ordered <= date_ord_to;
+  
+    nr_ord NUMBER;
+    k_nazwa VARCHAR2(50);
+    dat_zam DATE;
+    p_nazwisko VARCHAR2(25);
+    p_imie VARCHAR2(25);
+
+  BEGIN
+    OPEN k_par(TO_DATE('01/08/1992', 'dd/mm/yyyy'), TO_DATE('31/08/1992', 'dd/mm/yyyy'));
+    LOOP
+      FETCH k_par
+      INTO nr_ord,k_nazwa,dat_zam,p_nazwisko,p_imie;
+      EXIT WHEN k_par%NOTFOUND;
+      DBMS_OUTPUT.PUT_LINE('Zamowienie: '||nr_ord||' - '||dat_zam||' - '||k_nazwa||'; Pracownik: '||p_nazwisko||' '||p_imie);
+    END LOOP;
+  END;
+
+--[zad6]
+  DECLARE
+    srednia NUMBER;
+  BEGIN
+    SELECT AVG(salary) INTO srednia FROM emp_new;
+    UPDATE Emp_new SET salary =
+    CASE
+    --a)
+      WHEN salary < srednia/2 THEN salary*1.2
+    --b)
+      WHEN salary >= srednia/2 AND salary <= srednia*(5/6) THEN salary*1.1
+    --c)
+      ELSE salary*1.05 END;
+  END;

@@ -1,0 +1,100 @@
+/*Michal Graniczka LB3
+Zestaw 2*/
+
+-- [zad1]
+	SELECT
+		LOWER(first_name) AS Imiê,
+		LOWER(last_name) AS Nazwisko,
+		INITCAP(userid) AS Identyfikator,
+		UPPER(title) AS Stanowisko
+	FROM Emp
+	WHERE title LIKE 'VP%';
+
+-- [zad2]
+	SELECT first_name AS imiê, last_name AS nazwisko
+	FROM Emp
+	WHERE UPPER(last_name) LIKE 'PATEL';
+
+-- [zad3]
+	SELECT name || ' i ' || country AS "NAZWA I PAÑSTWO"
+	FROM Customer
+	WHERE credit_rating='GOOD';
+
+-- [zad4]
+	SELECT name AS nazwa, LENGTH(name) AS "LICZBA ZNAKÓW"
+	FROM Product
+	WHERE name LIKE 'Ace%';
+
+-- [zad5]
+	SELECT
+		ROUND(41.5843,2) AS setne,
+		ROUND(41.5843) AS calkowite,
+		ROUND(41.5843,-1) AS dziesi¹tki
+	FROM dual;
+
+-- [zad6]
+	SELECT
+		TRUNC(41.5843,2) AS setne,
+		TRUNC(41.5843) AS calkowite,
+		TRUNC(41.5843,-1) AS dziesi¹tki
+	FROM dual;
+
+-- [zad7]
+	SELECT
+		last_name AS nazwisko,
+		MOD(salary,commission_pct) AS reszta
+	FROM Emp
+	WHERE salary>1380;
+
+-- [zad7a]
+	SELECT
+		last_name AS nazwisko,
+		MOD(salary,commission_pct) AS reszta
+	FROM Emp
+	WHERE salary>1380 AND commission_pct IS NOT NULL;
+
+-- [zad8]
+	SELECT SYSDATE AS "AKTUALNA DATA"
+	FROM dual;
+
+-- [zad9]
+	SELECT
+		last_name AS nazwisko,
+		ROUND((SYSDATE-start_date)/7) AS "LICZBA TYGODNI"
+	FROM Emp
+	WHERE dept_id=43;
+
+-- [zad10]
+	SELECT
+		id,
+		ROUND(MONTHS_BETWEEN(SYSDATE,start_date)) AS "LICZBA MIESIÊCY",
+		ADD_MONTHS(start_date,3) AS "DATA KOÑCA OKRESU PRÓBNEGO"
+	FROM Emp
+	WHERE MONTHS_BETWEEN(SYSDATE,start_date)<284;
+
+-- [zad11]
+	SELECT
+		product_id AS produkt,
+		restock_date AS DOSTAWA,
+		NEXT_DAY(restock_date,'PI¥TEK') AS "PI¥TEK PO DOSTAWIE", -- nazwa dnia zale¿y od jêzyka instalacji
+		LAST_DAY(restock_date) AS "OSTATNI DZIEÑ MIESI¥CA"
+	FROM Inventory
+	WHERE restock_date IS NOT NULL
+	ORDER BY restock_date;
+
+-- [zad12]
+	SELECT id, start_date AS data, EXTRACT(MONTH FROM start_date) AS miesi¹c
+	FROM Emp
+	WHERE EXTRACT(YEAR FROM start_date)=1991;
+
+-- [zad13]
+	SELECT id, TO_CHAR(date_ordered, 'MM/YY') AS "MM/RR"
+	FROM Ord
+	WHERE sales_rep_id=11;
+
+-- [zad14]
+	SELECT
+		last_name AS nazwisko,
+		TO_CHAR(start_date, 'DD month YYYY "roku"') as data
+	FROM Emp
+	WHERE EXTRACT(YEAR FROM start_date)>=1991;

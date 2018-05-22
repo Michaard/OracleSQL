@@ -1,0 +1,143 @@
+/* Michal Graniczka LB3
+Zestaw 5*/
+
+--[zad01]
+SELECT id "NUMER ZAMÓWIENIA", total  WARTOŒÆ
+FROM Ord
+WHERE total in
+  (SELECT MAX(total)
+  FROM Ord);
+  
+--[zad02]
+SELECT
+  id NUMER,
+  date_ordered "DATA ZAMÓWIENIA",
+  date_shipped "DATA REALIZACJI",
+  total WARTOŒÆ
+FROM Ord
+WHERE payment_type LIKE 'CASH' AND total IN
+  (SELECT MIN(total)
+  FROM Ord);
+
+--[zad03]
+SELECT
+  id NUMER,
+  date_ordered "DATA ZAMÓWIENIA",
+  date_shipped "DATA REALIZACJI",
+  total WARTOŒÆ
+FROM Ord
+WHERE total >
+  (SELECT AVG(total)
+  FROM Ord);
+  
+--[zad04]
+SELECT name NAZWA, suggested_whlsl_price CENA
+FROM Product
+WHERE suggested_whlsl_price <
+  (SELECT AVG(suggested_whlsl_price)
+  FROM Product
+  WHERE name LIKE 'Prostar%');
+
+--[zad05]
+SELECT
+  warehouse_id "NR MAGAZYNU",
+  product_id "NR PRODUKTU",
+  amount_in_stock "LICZBA PRODUKTÓW"
+FROM Inventory
+WHERE (warehouse_id, amount_in_stock) IN
+  (SELECT warehouse_id, MAX(amount_in_stock)
+  FROM Inventory
+  GROUP BY warehouse_id);
+
+-- Informacje o magazynie 301 wystêpuj¹ dwukrtnie poniewa¿ dwa ró¿ne produkty
+-- z tego samego magazynu maj¹ tak¹ sam¹ iloœæ,
+-- która jest równa maksymalnej iloœci w tym magaznie
+-- (wawarehouse_id, amount_in_stock z podzapytania s¹ identyczne dla dwóch
+-- ró¿nych product_id z zapytania glównego,
+-- wiêc zapytanie glówne wypisuje je oba [oba spelniaj¹ warunek WHERE])
+
+--[zad06]
+SELECT
+  warehouse_id "NR MAGAZYNU",
+  product_id "NR PRODUKTU",
+  amount_in_stock "LICZBA PRODUKTÓW"
+FROM Inventory I1
+WHERE amount_in_stock =
+  (SELECT MAX(amount_in_stock)
+  FROM Inventory I2
+  WHERE I2.warehouse_id=I1.warehouse_id);
+  
+--[zad07]
+SELECT
+  W.city "MIASTO",
+  P.name "NAZWA PRODUKTU",
+  I1.amount_in_stock "LICZBA PRODUKTÓW"
+FROM Warehouse W, Product P, Inventory I1
+WHERE
+  W.id=I1.warehouse_id
+  AND
+  P.id=I1.product_id
+  AND
+  amount_in_stock =
+  (SELECT MAX(amount_in_stock)
+  FROM Inventory I2
+  WHERE I2.warehouse_id=I1.warehouse_id);
+
+--[zad08]
+SELECT name NAZWA
+FROM Customer C
+WHERE NOT EXISTS
+  (SELECT customer_id
+  FROM Ord O
+  WHERE C.id=O.customer_id);
+
+--[zad09]
+SELECT C.id "NUMER KLIENTA", C.name "NAZWA KLIENTA", O1.id "NUMER ZAMÓWIENIA"
+FROM Customer C, Ord O1
+WHERE EXISTS
+  (SELECT customer_id
+  FROM Ord O
+  WHERE C.id=O.customer_id)
+  AND
+  O1.customer_id=C.id;
+
+--[zad10]
+SELECT O1.customer_id "NUMER KLIENTA", O1.id "NUMER ZAMÓWIENIA"
+FROM Ord O1
+WHERE EXISTS
+  (SELECT customer_id
+  FROM Ord O
+  WHERE O.id=O1.id)
+ORDER BY O1.customer_id;
+
+--[zad11]
+SELECT E.last_name NAZWISKO
+FROM Emp E
+WHERE EXISTS
+  (SELECT id
+  FROM Ord O
+  WHERE
+    id<100
+    AND
+    E.id=O.sales_rep_id);
+
+--[zad12]
+SELECT E.last_name NAZWISKO
+FROM Emp E, Ord O
+WHERE
+  E.id=O.sales_rep_id
+  AND
+  O.id<100;
+
+/*By unikn¹æ sytuacji dwukrotnego wyst¹pienia nazwiska w powy¿szym
+przykadzie wystarczy dodaæ linijkê:
+  GROUP BY last_name
+na sam koniec zapytania*/
+
+--[zad13]
+SELECT first_name||' '||last_name "IMIÊ I NAZWISKO"
+FROM Emp E
+Where 4 <=
+  (SELECT COUNT(id)
+  FROM Ord O
+  WHERE E.id=O.sales_rep_id);

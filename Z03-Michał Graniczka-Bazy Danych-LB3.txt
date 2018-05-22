@@ -1,0 +1,88 @@
+/*Micha³ Graniczka LB3
+Zestaw 3*/
+
+-- [zad1]
+	SELECT E.last_name NAZWISKO, E.first_name IMIÊ, D.id ID, D.name "NAZWA DEPARTAMENTU"
+	FROM Emp E, Dept D
+	WHERE E.dept_id=D.id;
+
+-- [zad2]
+	SELECT D.id ID, R.id "NR REGIONU", R.name "NAZWA REGIONU"
+	FROM Dept D, Region R
+	WHERE D.region_id=R.id;
+
+-- [zad3]
+	SELECT
+		E.last_name NAZWISKO,
+		E.first_name IMIÊ,
+		E.dept_id "NR DEPARTAMENTU",
+		D.name NAZWA
+	FROM Emp E, Dept D
+	WHERE
+		UPPER(E.last_name) LIKE 'MENCHU'
+		AND
+		E.dept_id=D.id;
+
+-- [zad4]
+	SELECT E.last_name NAZWISKO, R.name NAZWA, E.commission_pct
+	FROM Emp E, Region R, Dept D
+	WHERE
+		E.dept_id=D.id
+		AND
+		D.region_id=R.id
+		AND
+		E.commission_pct IS NOT NULL;
+ 
+-- [zad5]
+	SELECT NVL(TO_CHAR(E.last_name),'-') NAZWISKO, NVL(TO_CHAR(E.id),'-') ID, C.name "NAZWA KLIENTA"
+	FROM Emp E, Customer C
+	WHERE C.sales_rep_id=E.id(+);
+
+-- [zad6]
+	SELECT E1.last_name || ' pracuje dla ' || E2.last_name "KTO DLA KOGO"
+	FROM Emp E1, Emp E2
+	WHERE E1.manager_id=E2.id;
+
+-- [zad7]
+	SELECT
+		C.name "NAZWA KLIENTA",
+		E.last_name NAZWISKO,
+		O.date_ordered "DATA ZAMÓWIENIA",
+		I.quantity LICZBA,
+		P.name "NAZWA PRODUKTU"
+	FROM Customer C, Emp E, Ord O, Product P, Item I
+	WHERE
+		C.sales_rep_id=E.id
+		AND
+		C.id=O.customer_id
+		AND
+		I.ord_id=O.id
+		AND
+		P.id=I.product_id
+		AND
+		O.id=101;
+
+-- [zad8]
+	SELECT C.id "NR KLIENTA", C.name "NAZWA KLIENTA", NVL(TO_CHAR(O.id),'-') "NR ZAMOWIENIA"
+	FROM Customer C, Ord O
+	WHERE C.id=O.customer_id(+);
+
+-- [zad9]
+	SELECT
+		MIN(salary) MINIMALNA,
+		MAX(salary) MAKSYMALNA,
+		AVG(salary) ŒREDNIA,
+		SUM(salary) SUMA,
+		COUNT(salary) "LICZBA PRACOWNIKÓW"
+	FROM Emp;
+
+-- [zad10]
+	SELECT
+		MIN(last_name) "PIERWSZE MIEJSCE",
+		MAX(last_name) "OSTATNIE MIEJSCE"
+	FROM Emp;
+
+-- [zad11]
+	SELECT COUNT(*) "LICZBA PRACOWNIKÓW"
+	FROM Emp
+	WHERE dept_id=31 AND commission_pct IS NOT NULL;

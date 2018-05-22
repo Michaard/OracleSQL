@@ -1,0 +1,45 @@
+/*ZESTAW 8
+Michał Graniczka - LB3*/
+
+--[zad1]
+  CREATE TABLE Customer(
+    id_customer INTEGER PRIMARY KEY NOT NULL,
+    name VARCHAR(20),
+    surname VARCHAR(20) NOT NULL,
+    street VARCHAR(40),
+    city VARCHAR(40),
+    login VARCHAR(10) NOT NULL,
+    password VARCHAR(12) NOT NULL);
+
+  CREATE TABLE Ord(
+    id_order INTEGER PRIMARY KEY NOT NULL,
+    id_customer INTEGER NOT NULL,
+    order_date DATE NOT NULL,
+    FOREIGN KEY (id_customer) REFERENCES Customer(id_customer));
+
+  CREATE TABLE Product(
+    id_product INTEGER PRIMARY KEY NOT NULL,
+    name VARCHAR(30),
+    net_price FLOAT NOT NULL,
+    gross_price FLOAT NULL,
+    description CLOB);
+
+  CREATE TABLE Position(
+    id_product INTEGER NOT NULL,
+    id_order INTEGER NOT NULL,
+    quantity INTEGER NOT NULL,
+    FOREIGN KEY (id_product) REFERENCES Product(id_product),
+    FOREIGN KEY (id_order) REFERENCES Ord(id_order));
+
+--[zad2]
+    --1
+  ALTER TABLE Customer ADD (country VARCHAR(30));
+    --2
+  ALTER TABLE Customer RENAME COLUMN street TO adress_code;
+  ALTER TABLE Customer MODIFY (adress_code VARCHAR(8));
+    --3
+  ALTER TABLE Ord ADD (date_shipped DATE);
+  ALTER TABLE Ord ADD (ord_value NUMBER(10));
+    --4
+  ALTER TABLE Product ADD (vat FLOAT);
+  ALTER TABLE Product ADD gross_price AS (net_price+(net_price*vat));

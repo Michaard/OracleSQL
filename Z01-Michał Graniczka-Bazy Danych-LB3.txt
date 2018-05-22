@@ -1,0 +1,114 @@
+/*ZESTAW 1
+Micha³ Graniczka - LB3*/
+
+--[zad1]
+	SELECT *
+	FROM Dept;
+
+--[zad2]
+	SELECT dept_id, last_name, manager_id
+	FROM Emp;
+
+--[zad3]
+	SELECT salary*12, last_name
+	FROM Emp;
+
+--[zad4]
+	SELECT first_name, last_name, salary, (salary*12)+1000
+	FROM Emp;
+
+--[zad5]
+	SELECT first_name, last_name, salary, (salary*12)+((0.08*salary)*12)
+	FROM Emp;
+
+--[zad6]
+	SELECT last_name, (salary*12)+(0.05*salary) AS "ROCZNY DOCHÓD"
+	FROM Emp;
+
+--[zad7]
+	SELECT concat(first_name,last_name) AS "Imiê i Nazwisko"
+	FROM Emp;
+
+--[zad8]
+	SELECT 
+		first_name || ' ' || last_name || ' - ' || title
+		AS "Super Pracownicy"
+	FROM Emp;
+
+--[zad9]
+	SELECT last_name, salary, title, salary*(commission_pct/100) AS prowizja
+	FROM Emp;
+
+/*Niektóre rekordy nie maj¹ wartoœci w kolumnie "prowizja" poniewa¿ rekordy "commission_pct"
+im odpowiadaj¹ce maj¹ wartoœæ NULL.
+W jêzyku SQL ka¿da operacja, w której wystêpuje NULL ma wartoœæ NULL.*/
+
+--[zad10]
+	SELECT last_name, salary, title, NVL(salary*(commission_pct/100),0) AS prowizja
+	FROM Emp;
+
+--[zad11]
+	SELECT DISTINCT name
+	FROM Dept;
+	
+--[zad12]
+-- ROSN¥CO:
+	SELECT last_name, dept_id, start_date
+	FROM Emp
+	ORDER BY start_date;
+
+-- MALEJ¥CO:
+	SELECT last_name, dept_id, start_date
+	FROM Emp
+	ORDER BY start_date DESC;
+
+--[zad13]
+	SELECT last_name, dept_id, salary, start_date
+	FROM Emp
+	ORDER BY dept_id, salary DESC;
+
+--[zad14]
+	SELECT first_name, last_name, title
+	FROM Emp
+	WHERE last_name='Patel';
+
+--[zad15]
+	SELECT first_name, last_name, start_date
+	FROM Emp
+	WHERE 
+		start_date > '02-may-1991'
+		AND 
+		start_date < '15-jun-1991';
+
+--[zad16]
+	SELECT ID, name, region_id
+	FROM Dept
+	WHERE
+		region_id=1
+		OR
+		region_id=3;
+
+--[zad17]
+	SELECT *
+	FROM Emp
+	WHERE last_name LIKE 'M%';
+
+--[zad18]
+	SELECT *
+	FROM Emp
+	WHERE last_name NOT LIKE '%a%';
+
+--[zad19]
+	SELECT last_name, start_date
+	FROM Emp
+	WHERE start_date LIKE '%-1991';
+
+--[zad20]
+	SELECT last_name
+	FROM Emp
+	WHERE last_name LIKE '_a%';
+
+--[zad21]
+	SELECT name
+	FROM Customer
+	WHERE name LIKE '%s_o%';

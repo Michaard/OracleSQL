@@ -1,0 +1,75 @@
+/*ZESTAW 6
+Micha³ Graniczka - LB3*/
+
+--[zad1]
+	SELECT first_name, last_name, (salary*12)-(salary*12)/4
+	FROM Emp
+	WHERE dept_id=41;
+
+--[zad2]
+	SELECT first_name, last_name, start_date
+	FROM Emp
+	WHERE start_date < '90-12-31'
+	ORDER BY start_date;
+
+--[zad3]
+	SELECT DISTINCT(last_name)
+	FROM Emp;
+
+--[zad4]
+	SELECT E.last_name||' '||D.name
+	FROM Emp E, Dept D
+	WHERE E.dept_id=D.id;
+
+--[zad5]
+	SELECT E1.title
+	FROM Emp E1
+	WHERE E1.dept_id=44 AND E1.title NOT IN
+		(SELECT E2.title
+		FROM Emp E2
+		WHERE E2.dept_id=50);
+
+--[zad6]
+	SELECT title, start_date
+	FROM Emp
+	WHERE EXTRACT(year from start_date) BETWEEN 1990 AND 1991;
+
+--[zad7]
+	SELECT ord_id, price,
+		CASE
+		WHEN quantity>550 THEN 'wieksze'
+		WHEN quantity<550 THEN 'mniejsze'
+		ELSE 'równe'
+		END "Czy wieksze"
+	FROM Item
+	ORDER BY ord_id;
+
+--[zad8]
+	SELECT
+		ord_id,
+		ROUND(AVG(price*quantity),2), MAX(price*quantity),
+		MIN(price*quantity), SUM(price*quantity)
+	FROM Item
+	GROUP BY ord_id
+	HAVING COUNT(ord_id)>=2;
+
+--[zad9]
+	SELECT name
+	FROM Product
+	WHERE name LIKE '% % % %';
+
+--[zad10]
+	SELECT D.id, COUNT(E.last_name)
+	FROM Dept D, Emp E
+	WHERE
+		D.id=E.dept_id
+		AND
+		E.title NOT LIKE 'VP, Finance'
+	GROUP BY D.id
+	HAVING AVG(E.salary)>=999
+	ORDER BY SUM(E.salary);
+
+--[zad11]
+	SELECT id, date_ordered, date_shipped, date_shipped-date_ordered
+	FROM Ord
+	WHERE TO_CHAR(date_ordered, 'MM/YYYY') LIKE '09/1992';

@@ -1,0 +1,89 @@
+--[zad1]
+SELECT TO_CHAR(SYSDATE-1, 'DD month YYYY "roku"') "WCZORAJSZA DATA"
+FROM Dual;
+
+--[zad2]
+SELECT
+  TO_CHAR(SYSDATE-12, 'month') "Miesiac 12 dni temu",
+  EXTRACT(year from SYSDATE-12) "Rok 12 dni temu",
+  EXTRACT(day from SYSDATE-12) "Dzien 12 dni temu"
+FROM Dual;
+
+--[zad3]
+SELECT date_ordered "DATA ZAMOWIENIA"
+FROM Ord
+WHERE EXTRACT(year from date_ordered) LIKE 1992;
+
+--[zad4]
+SELECT last_name "Pracownik", MOD(salary,3) "Reszta"
+FROM Emp
+WHERE salary<=2000;
+
+--[zad5]
+SELECT start_date "Data przyjecia", COUNT(last_name) "Liczba przyjetych pracownikow"
+FROM Emp
+GROUP BY start_date
+ORDER BY start_date;
+
+--[zad6]
+SELECT last_name "Pracownik", start_date "Data zatrudnienia", ADD_MONTHS(start_date,10) "Data powiekszona o 10 m-cy"
+FROM Emp
+WHERE MONTHS_BETWEEN(SYSDATE,start_date)>=10;
+
+--[zad7]
+SELECT E.last_name "Nazwisko", R.name "Region"
+FROM Emp E, Region R, Dept D
+WHERE
+  D.region_id=R.id
+  AND
+  E.dept_id=D.id
+  AND
+  E.commission_pct IS NULL;
+  
+--[zad8]
+SELECT C.name "Klient", O.date_ordered "Data zamowienia", I.price*I.quantity "Wielkosc zamowienia", P.name "Nazwa produktu"
+FROM Customer C, Ord O, Product P, Item I
+WHERE
+  I.ord_id=O.id
+  AND
+  I.product_id=P.id
+  AND
+  O.customer_id=C.id
+  AND
+  O.id=104;
+-- Modyfikacja zad8 tak, by wyswietlony byl tylko 1 rekord
+SELECT C.name "Klient", O.date_ordered "Data zamowienia", SUM(I.price*I.quantity) "Wielkosc zamowienia"
+FROM Customer C, Ord O, Item I
+WHERE
+  I.ord_id=O.id
+  AND
+  O.customer_id=C.id
+  AND
+  O.id=104
+GROUP BY C.name, O.date_ordered;
+
+--[zad9]
+SELECT COUNT(*) "Liczba klientow z USA"
+FROM Customer
+WHERE country LIKE 'USA';
+
+--[zad10]
+SELECT title "Stanowisko VP", AVG(salary) "Srednie zarobki miesiecne"
+FROM Emp
+WHERE title LIKE 'VP%'
+GROUP BY title;
+
+--[zad11]
+SELECT O.id "Szczegoly zamowienia", C.name "Nazwa klienta", P.name "Zamowiony produkt", O.total "Cena sprzedazy"
+FROM Ord O, Customer C, Product P, Item I
+WHERE
+  payment_type NOT LIKE 'CASH'
+  AND
+  TO_CHAR(date_ordered, 'mm/yyyy') LIKE '08/1992'
+  AND
+  O.id=I.ord_id
+  AND
+  C.id=O.customer_id
+  AND
+  I.product_id=P.id
+GROUP BY O.id;

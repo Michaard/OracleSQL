@@ -1,0 +1,63 @@
+/*ZESTAW 12
+Michał Graniczka - LB3*/
+
+SET SERVEROUTPUT ON;
+
+CREATE OR REPLACE TRIGGER customers_notifications
+AFTER INSERT OR DELETE OR UPDATE ON Customer
+FOR EACH ROW
+
+BEGIN
+  IF Inserting THEN
+    DBMS_OUTPUT.PUT_LINE('Dodano nowego klienta.');
+    
+  ELSIF Deleting THEN
+    DBMS_OUTPUT.PUT_LINE('Skasowano klienta.');
+    
+  ELSIF Updating THEN
+    DBMS_OUTPUT.PUT_LINE('Dla klienta o id: '||:old.id);
+    IF NVL(:old.id,0) != :new.id THEN -- NVL dodane wszedzie na wypadek update'owania wartosci nullowych, poniewaz wartosci NULL nie mozna przyrownywac do innych wartosci ani samej siebie
+        DBMS_OUTPUT.PUT_LINE('- zmieniono id na '||:new.id);
+    END IF;
+    IF NVL(:old.name,0) != :new.name THEN
+      DBMS_OUTPUT.PUT_LINE('- zmieniono nazwe na '||:new.name);
+    END IF;
+    IF NVL(:old.phone,0) != :new.phone THEN
+      DBMS_OUTPUT.PUT_LINE('- zmieniono nr telefonu na '||:new.phone);
+    END IF;
+    IF NVL(:old.address,0) != :new.address THEN
+      DBMS_OUTPUT.PUT_LINE('- zmieniono adres na '||:new.address);
+    END IF;
+    IF NVL(:old.city,0) != :new.city THEN
+      DBMS_OUTPUT.PUT_LINE('- zmieniono miasto na '||:new.city);
+    END IF;
+    IF NVL(:old.state,0) != :new.state THEN
+      DBMS_OUTPUT.PUT_LINE('- zmieniono stan na '||:new.state);
+    END IF;
+    IF NVL(:old.country,0) != :new.country THEN
+      DBMS_OUTPUT.PUT_LINE('- zmieniono kraj na '||:new.country);
+    END IF;
+    IF NVL(:old.zip_code,0) != :new.zip_code THEN
+      DBMS_OUTPUT.PUT_LINE('- zmieniono kod zip na '||:new.zip_code);
+    END IF;
+    IF NVL(:old.credit_rating,0) != :new.credit_rating THEN
+      DBMS_OUTPUT.PUT_LINE('- zmieniono zdolnosc kredytowa na '||:new.credit_rating);
+    END IF;
+    IF NVL(:old.sales_rep_id,0) != :new.sales_rep_id THEN
+      DBMS_OUTPUT.PUT_LINE('- zmieniono id przedstawiciela handlowego na '||:new.sales_rep_id);
+    END IF;
+    IF NVL(:old.region_id,0) != :new.region_id THEN
+      DBMS_OUTPUT.PUT_LINE('- zmieniono id regionu na '||:new.region_id);
+    END IF;
+    IF NVL(:old.comments,0) != :new.comments THEN
+      DBMS_OUTPUT.PUT_LINE('- zmieniono komentarz.');
+    END IF;
+  END IF;
+END;
+
+--PO JEDNORAZOWYM UŻYCIU ZAKOMENTOWAĆ OBA PONIŻSZE WYWOŁANIA W CELU UNIKNIĘCIA BŁEDÓW
+ALTER TRIGGER customers_notifications ENABLE;
+ALTER TABLE Customer ENABLE ALL TRIGGERS;
+
+--Jeżeli nie kompilacja wyświetla błąd należy zakomentować powyższe dwa wywołania alter,
+--skompilować i dopiero później wykonać powyższe dwa wywołania.

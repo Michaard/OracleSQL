@@ -1,0 +1,155 @@
+/*Michal Graniczka LB3
+ZESTAW 4*/
+
+--[zad1]
+	SELECT credit_rating "ZDOLNOŒÆ KREDYTOWA", COUNT(*) "LICZBA KLIENTÓW"
+	FROM Customer
+	GROUP BY credit_rating;
+
+--[zad2]
+	SELECT title STANOWISKO, SUM(salary) ZAROBKI
+	FROM Emp
+	WHERE UPPER(title) NOT LIKE 'VP%'
+	GROUP BY title
+	ORDER BY SUM(salary);
+
+--[zad3]
+	SELECT title STANOWISKO, MAX(salary) "MAKSYMALNE ZAROBKI"
+	FROM Emp
+	GROUP BY title;
+
+--[zad4]
+	SELECT D.name "NAZWA DEPARTAMENTU", AVG(E.salary) "Srednie zarobki"
+	FROM Dept D, Emp E
+	WHERE D.id=E.dept_id
+	GROUP BY D.name
+	HAVING AVG(E.salary)>1499;
+
+--[zad5]
+	SELECT
+		O.id NR,
+		C.name KLIENT,
+		P.name PRODUKT,
+		O.payment_type P£ATNOŒÆ,
+		O.date_ordered "DATA ZAMÓWIENIA",
+		I.price CENA,
+		I.quantity LICZBA
+	FROM Ord O, Customer C, Product P, Item I
+	WHERE
+		O.customer_id=C.id
+		AND
+		I.ord_id=O.id
+		AND
+		P.id=I.product_id
+		AND
+		UPPER(O.payment_type) LIKE 'CASH'
+		AND
+		TO_CHAR(O.date_ordered, 'YY/MM') LIKE '92/09%'
+	ORDER BY O.id, P.name;
+  
+--[zad6]
+	SELECT
+		O.id NR,
+		C.name KLIENT,
+		O.payment_type P£ATNOŒÆ,
+		O.date_ordered "DATA ZAMÓWIENIA",
+		SUM(I.price*I.quantity) "WYSOKOŒÆ ZAMÓWIENIA"
+	FROM Ord O, Customer C, Item I
+	WHERE
+		O.customer_id=C.id
+		AND
+		I.ord_id=O.id
+		AND
+		UPPER(O.payment_type) LIKE 'CASH'
+		AND
+		TO_CHAR(O.date_ordered, 'YY/MM') LIKE '92/09%'
+	GROUP BY C.name, O.id, O.payment_type, O.date_ordered
+	ORDER BY O.id;
+
+--[zad7]
+	SELECT last_name NAZWISKO
+	FROM Emp
+	GROUP BY last_name
+	HAVING COUNT(last_name) > 1; 
+
+--[zad7a]
+	SELECT last_name NAZWISKO, first_name IMIÊ
+	FROM Emp
+	WHERE last_name IN
+		(SELECT last_name
+		FROM Emp
+		GROUP BY last_name
+		HAVING COUNT(last_name) > 1);
+
+--[zad8]
+	SELECT
+		first_name IMIÊ,
+		last_name NAZWISKO,
+		title STANOWISKO,
+		NVL(TO_CHAR(manager_id),' ') ZWIERZCHNIK,
+		LEVEL-1 POZIOM
+	FROM Emp
+	CONNECT BY PRIOR
+		id=manager_id
+	START WITH
+		manager_id IS NULL
+	ORDER BY LEVEL;
+
+--[zad9]
+	SELECT
+		first_name IMIÊ,
+		last_name NAZWISKO,
+		title STANOWISKO,
+		NVL(TO_CHAR(manager_id),' ') ZWIERZCHNIK,
+		level POZIOM
+	FROM Emp
+	CONNECT BY PRIOR
+		id=manager_id
+	START WITH
+		title='VP, Operations'
+	ORDER BY LEVEL;
+
+--[zad10]
+	SELECT region_id "ID REGIONU", name NAZWA
+	FROM Dept
+	UNION
+	SELECT id "ID REGIONU", name NAZWA
+	FROM Region
+	ORDER BY 2;
+
+--[zad11]
+	SELECT name NAZWA
+	FROM Dept
+	UNION
+	SELECT name NAZWA
+	FROM Region
+	ORDER BY 1;
+
+--[zad12]
+	SELECT name NAZWA
+	FROM Dept
+	UNION ALL
+	SELECT name NAZWA
+	FROM Region;
+
+--[zad13]
+	SELECT dept_id "NR DEPT/REG", last_name "NAZWISKO/NAZWA"
+	FROM Emp
+	UNION
+	SELECT id, name
+	FROM Region
+	ORDER BY 2;
+
+--[zad14]
+	SELECT id ID
+	FROM Customer
+	INTERSECT
+	SELECT customer_id
+	FROM Ord;
+
+--[zad15]
+	SELECT id ID
+	FROM Customer
+	MINUS
+	SELECT customer_id
+	FROM Ord;

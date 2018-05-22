@@ -1,0 +1,119 @@
+/*ZESTAW 7
+Micha³ Graniczka - LB3*/
+
+--[zad1]
+  INSERT INTO Emp VALUES
+    (102, 'Graniczka', 'Michal', null, null, null, null, null, null, null, null);
+
+--[zad2]
+  INSERT INTO Emp VALUES
+    (103, 'Graniczka', 'Lahcim', null, null, null, null, null, null, null, null);
+
+--[zad3]
+  INSERT INTO Emp (id,last_name,start_date) VALUES
+    (104, 'Nowak',TO_DATE('01-10-2003', 'DD-MM-YYYY'));
+
+--[zad4]
+  INSERT INTO Region (id,name)
+    SELECT id*1111, name||' -->>duplikat'
+    FROM Region;
+
+--[zad5]
+  INSERT INTO Region (id,name)
+    SELECT id*150, last_name||' z tabeli EMP'
+    FROM Emp
+    WHERE salary>1500;
+    
+--[zad6]
+  CREATE TABLE dept_kopia(
+    id          NUMBER(7),
+    name        VARCHAR2(25),
+    region_id   NUMBER(7)
+  );
+
+  INSERT INTO Dept_kopia (id,name,region_id)
+    SELECT id,name,region_id
+    FROM Dept;
+    
+--[zad7]
+  UPDATE Emp
+  SET
+    userid = 'MG',
+    salary = 2222,
+    start_date = TO_DATE('01-01-2004','DD-MM-YYYY')
+  WHERE id=102;
+  
+--[zad8]
+  UPDATE Emp
+  SET
+    comments = last_name||' - '||NVL(TO_CHAR(dept_id),'brak danych');
+
+--[zad9]
+  UPDATE Emp
+  SET
+    salary = salary+salary*0.2
+  WHERE salary<1500;
+  
+  --Wiersze, ktore zostana zaktualizowane
+  SELECT *
+  FROM Emp
+  WHERE salary<1500;
+
+--[zad10]
+  DELETE FROM Region;
+  
+  --Nie mo¿na skasowaæ wszystkich rekordów poniewa¿
+  --w innych tabelach istniaj¹ powiazane rekordy
+  --(te, ktore maj¹ ograniczenie FOREIGN KEY)
+  --Polecenie DELETE jest transakcj¹ niepodzieln¹,
+  --wiêc musi byæ wykonane w caloœci lub w caloœci odrzucone
+  --->niemo¿liwoœæ usuniêcia choæby jednego rekordu anuluje
+  --cale polecenie
+
+--[zad11]
+  DELETE FROM Emp
+  WHERE last_name LIKE 'Graniczka';
+  
+  --Udalo siê usun¹æ dwa rekordy, poniewa¿ byly one bez dowi¹zañ
+  --do innych wartoœci w innych tabelach (pole powi¹zane ograniczeniami
+  --FOREIGN KEY by³y puste)
+  
+ --[zad12]
+  DELETE FROM Item;
+  DELETE FROM Inventory;
+  DELETE FROM Product;
+  DELETE FROM Longtext;
+  DELETE FROM Image;
+  DELETE FROM Warehouse;
+  DELETE FROM Ord;
+  DELETE FROM Customer;
+  DELETE FROM Emp;
+  DELETE FROM Title;
+  DELETE FROM Dept;
+  DELETE FROM Region;
+
+--[zad13]
+  --Polecenie ROLLBACK wycofuje poprzednio wprowadzone zmiany;
+  SELECT Count(*) FROM Emp;
+  ROLLBACK;
+  --Po wykonaniu wszystkich wywoañ DELETE z zad12 SELECT Count
+  --pokazuje wartosc 0; gdy w danej transkacji wyknamy ROLLBACK
+  --wszystkie wywoania delete zostaja cofniete i w tabelach ponownie
+  --sa poprzednie wartosci;
+  
+  --Polecenie COMMIT zatwierdza wprowadzone do tej pory zmiany
+  --tak, ¿e ROLLBACK nie bêdzie mogo ich cofn¹æ;
+  DELETE FROM Emp WHERE last_name LIKE 'Graniczka';
+  COMMIT;
+  ROLLBACK;
+  --Po wykonaniu dwoch pierwszych polecen ROLLBACK juz niczego nie cofnie
+  --Poniewaz wszelkie zmiany zostaly zatwierdzone na stale;
+  
+  --Polecenie SAVEPOINT slu¿y by bardziej precyzyjnie cofaæ zmiany
+  --(do konkretnych punktów kontrolnych)
+  UPDATE Emp SET salary = 100;
+  SAVEPOINT cp1;
+  UPDATE Emp SET salary = 200;
+  SAVEPOINT cp2;
+  ROLLBACK TO SAVEPOINT cp2; --cofa zmiany a¿ do punktu kontrolnego nazwanego cp2;
+  ROLLBACK TO SAVEPOINT cp1; --cofa wszelkie zmiany az do punktu kontrolnego cp1;
